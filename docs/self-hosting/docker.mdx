@@ -140,13 +140,19 @@ Pi 4 or newer running a 64-bit operating system.
 
   <Step title="Start the containers">
     ```bash
-    docker compose up -d
-    docker compose logs -f reactive-resume
+    docker compose up -d --wait --wait-timeout 180
     ```
 
-    On the first start the app creates its database tables. When the log shows a line containing
-    `Up and running on`, press <kbd>Ctrl</kbd> <kbd>C</kbd> to stop following the log. Within a minute, `docker compose ps` shows
-    the app as `healthy`.
+    On the first start the app creates its database tables. The `--wait` option waits for PostgreSQL and the app to
+    become healthy, with a timeout of 180 seconds. When it succeeds, open your `APP_URL` (in this example,
+    `http://localhost:3000`).
+
+    If startup fails or times out, check the service status and recent app logs:
+
+    ```bash
+    docker compose ps
+    docker compose logs --tail=50 reactive-resume
+    ```
 
   </Step>
 
