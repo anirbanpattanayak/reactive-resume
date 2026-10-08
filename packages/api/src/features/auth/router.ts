@@ -94,16 +94,21 @@ export const authRouter = {
 
 	deleteAccount: protectedProcedure
 		.route({
+			spec: (operation) => ({ ...operation, security: [{ cookieAuth: [] }] }),
 			method: "DELETE",
 			path: "/auth/account",
 			tags: ["Authentication"],
 			operationId: "deleteAccount",
 			summary: "Delete user account",
 			description:
-				"Permanently deletes the authenticated user's account, including all resumes, uploaded files (profile pictures, screenshots, PDFs), and associated data. This action is irreversible. Requires authentication.",
+				"Permanently deletes the authenticated user's account, including all resumes, uploaded files (profile pictures, screenshots, PDFs), and associated data. This action is irreversible. Requires a browser session; keys and OAuth tokens cannot delete accounts.",
 			successDescription: "The user account and all associated data have been successfully deleted.",
 		})
 		.input(z.object({}).optional())
 		.output(z.void())
-		.handler(({ context }) => authService.deleteAccount({ userId: context.user.id })),
+		.handler(async ({ context }) => {
+			if (context.authentication?.method !== "session")
+				throw new ORPCError("FORBIDDEN", { message: "Account deletion must be performed in your browser settings." });
+			await authService.deleteAccount({ userId: context.user.id });
+		}),
 };
