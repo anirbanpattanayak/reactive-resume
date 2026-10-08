@@ -1,6 +1,7 @@
 import type { DialogProps } from "../store";
 import { t } from "@lingui/core/macro";
 import { Trans } from "@lingui/react/macro";
+import { useSelector } from "@tanstack/react-form";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
 import z from "zod";
@@ -69,6 +70,8 @@ export function DisableTwoFactorDialog(_: DialogProps<"auth.two-factor.disable">
 		},
 	});
 
+	const isSubmitting = useSelector(form.store, (state) => state.isSubmitting);
+
 	useFormBlocker(form);
 
 	return (
@@ -103,8 +106,8 @@ export function DisableTwoFactorDialog(_: DialogProps<"auth.two-factor.disable">
 							<FormControl
 								render={
 									<PasswordInput
-										min={6}
-										max={64}
+										minLength={6}
+										maxLength={64}
 										autoComplete="current-password"
 										name={field.name}
 										value={field.state.value}
@@ -119,7 +122,7 @@ export function DisableTwoFactorDialog(_: DialogProps<"auth.two-factor.disable">
 				</form.Field>
 
 				<DialogFooter>
-					<Button type="submit" variant="danger">
+					<Button type="submit" variant="danger" disabled={isSubmitting}>
 						<Trans comment="Destructive action button to turn off two-factor authentication">Disable 2FA</Trans>
 					</Button>
 				</DialogFooter>

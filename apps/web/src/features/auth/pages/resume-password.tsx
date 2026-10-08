@@ -26,7 +26,7 @@ type ResumePasswordPageProps = {
 export function ResumePasswordPage({ username, slug, redirectPath }: ResumePasswordPageProps) {
 	const navigate = useNavigate();
 
-	const { mutate: verifyPassword } = useMutation(orpc.resume.verifyPassword.mutationOptions());
+	const { mutate: verifyPassword, isPending } = useMutation(orpc.resume.verifyPassword.mutationOptions());
 
 	const form = useAppForm({
 		defaultValues: { password: "" },
@@ -101,8 +101,8 @@ export function ResumePasswordPage({ username, slug, redirectPath }: ResumePassw
 							<FormControl
 								render={
 									<PasswordInput
-										min={6}
-										max={64}
+										minLength={6}
+										maxLength={64}
 										autoComplete="new-password"
 										name={field.name}
 										value={field.state.value}
@@ -116,7 +116,7 @@ export function ResumePasswordPage({ username, slug, redirectPath }: ResumePassw
 					)}
 				</form.Field>
 
-				<Button type="submit" className="w-full">
+				<Button type="submit" className="w-full" disabled={isPending}>
 					<Icon name="lock_open" size={16} />
 					<Trans comment="Primary action button label to unlock a password-protected resume">Unlock</Trans>
 				</Button>
